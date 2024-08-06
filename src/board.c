@@ -1,14 +1,16 @@
-#include <stdbool.h>
 #include <stdlib.h>
 #include "board.h"
 
+//Create board and allocate memory
 Board* create_board(int height, int width){
     Board* board = (Board*)malloc(sizeof(Board));
     if(board == NULL){
         return NULL;
     }
+    
     board->width = width;
     board->height = height;
+
     board->cells = (int**)malloc(height * sizeof(int*));
     for(int i = 0; i < height; i++){
         board->cells[i] = (int*)malloc(width * sizeof(int));
@@ -18,6 +20,7 @@ Board* create_board(int height, int width){
     return board;
 }
 
+//Initialize all cells to zero
 void init_board(Board* board){
     for(int r = 0; r < board->height; r++){
         for(int c = 0; c < board->width; c++){
@@ -26,15 +29,9 @@ void init_board(Board* board){
     }
 }
 
-void copy_board(int** cells, int** newCells, int height, int width){
-    for(int r = 0; r < height; r++){
-        for(int c = 0; c < width; c++){
-            newCells[r][c] = cells[r][c];
-        }
-    }
-}
-
+//Check the next generation at cell r,c
 int next_gen(int** cells, int r, int c, int height, int width){
+    //Count neighbors
     int neighbors = 0;
     for(int x = -1; x <= 1; x++){
         for(int y = -1; y <= 1; y++){
@@ -48,6 +45,7 @@ int next_gen(int** cells, int r, int c, int height, int width){
         }
     }
     
+    //Apply logic for if a cell is alive or not
     if(cells[r][c]){
         if(neighbors < 2 || neighbors > 3){
             return 0;
@@ -64,12 +62,13 @@ int next_gen(int** cells, int r, int c, int height, int width){
     }
 }
 
+//Update all cells in the board
 void update_board(Board* board){
     int height = board->height;
     int width = board->width;
     int tempCells[height][width];
 
-    //Apply logic to the cells
+    //Apply next generation logic to the cells
     for(int r = 0; r < height; r++){
         for(int c = 0; c < width; c++){
             tempCells[r][c] = next_gen(board->cells, r, c, height, width);
@@ -93,6 +92,8 @@ void print_board(Board* board){
     }
 }
 
+
+//Draws rectangles for all the cells in the board
 void render_board(Board* board, SDL_Renderer* renderer, SDL_Window* window){
     int width = 0;
     int height = 0;
@@ -101,6 +102,7 @@ void render_board(Board* board, SDL_Renderer* renderer, SDL_Window* window){
 
     int cellWidth =  width / board->width;
     int cellHeight = height / board->height;
+
     for(int r = 0; r < board->height; r++){
         for(int c = 0; c < board->width; c++){
             SDL_Rect rect;
@@ -122,6 +124,7 @@ void render_board(Board* board, SDL_Renderer* renderer, SDL_Window* window){
     }
 }
 
+//Toggle the state of the square at the mouse coordinates
 void toggle_square(Board* board, SDL_Renderer* renderer, int mouseX, int mouseY){
     int width = 0;
     int height = 0;
@@ -142,6 +145,7 @@ int get_cell(Board* board, int x, int y){
     return board->cells[x][y];
 }
 
+//Free the memory allocated for the board
 void cleanup_board(Board* board){
     for(int i = 0; i < board->height; i++){
         free(board->cells[i]);
