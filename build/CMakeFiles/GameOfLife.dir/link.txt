@@ -1,0 +1,1 @@
+/usr/bin/cc -g CMakeFiles/GameOfLife.dir/src/main.c.o CMakeFiles/GameOfLife.dir/src/board.c.o -o GameOfLife  -Wl,-rpath,/usr/local/lib /usr/local/lib/libSDL2main.a /usr/local/lib/libSDL2-2.0.so.0.3000.5 
