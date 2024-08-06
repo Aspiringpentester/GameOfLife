@@ -69,8 +69,6 @@ void update_board(Board* board){
     int width = board->width;
     int tempCells[height][width];
 
-    //print_board(board);
-
     //Apply logic to the cells
     for(int r = 0; r < height; r++){
         for(int c = 0; c < width; c++){
@@ -124,6 +122,17 @@ void render_board(Board* board, SDL_Renderer* renderer, SDL_Window* window){
     }
 }
 
+void toggle_square(Board* board, SDL_Renderer* renderer, int mouseX, int mouseY){
+    int width = 0;
+    int height = 0;
+
+    SDL_GetRendererOutputSize(renderer, &width, &height);
+
+    int x = ((double)mouseX / width) * board->width;
+    int y = ((double)mouseY / height) * board->height;
+
+    board->cells[y][x] = !board->cells[y][x];
+}
 
 void set_cell(Board* board, int x, int y, int value){
     board->cells[x][y] = value;

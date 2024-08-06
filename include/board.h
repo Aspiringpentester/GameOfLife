@@ -14,6 +14,7 @@ void init_board(Board* board);
 void update_board(Board * board);
 void render_board(Board* board, SDL_Renderer* renderer, SDL_Window* window);
 void print_board(Board* board);
+void toggle_square(Board* board, SDL_Renderer* renderer, int mouseX, int mouseY);
 void set_cell(Board* board, int x, int y, int value);
 int get_cell(Board* board, int x, int y);
 void cleanup_board(Board* board);

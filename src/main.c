@@ -1,8 +1,9 @@
 #include <SDL2/SDL.h>
+#include <time.h>
 #include "board.h"
 
 int main(){
-    Board* board = create_board(10, 10);
+    Board* board = create_board(20, 20);
     if(board == NULL){
         printf("Board failed to allocate");
         return 1;
@@ -31,30 +32,53 @@ int main(){
         return 1;
     }
 
-    //print_board(board);
-    //printf("\n");
-    //update_board(board);
-    //print_board(board);
-
     SDL_Event event;
     int running = 1;
 
+    clock_t lastTime = clock();
+    clock_t fpsTime = clock();
+    int frameCount = 0;
+    int fps = 0;
+
     while(running){
+        clock_t currentTime = clock();
+        double deltaTime = (double)(currentTime - lastTime) / CLOCKS_PER_SEC;
+        lastTime = currentTime;
+
         while(SDL_PollEvent(&event)){
-            if(event.type == SDL_QUIT){
-                running = 0;
+            switch(event.type){
+                case SDL_QUIT: running = 0; 
+                    break;
+                case SDL_MOUSEBUTTONDOWN:
+                    switch(event.button.button){
+                        case SDL_BUTTON_LEFT:
+                            int x;
+                            int y;
+                            SDL_GetMouseState(&x, &y);
+                            toggle_square(board, renderer, x, y);
+                    }
+                    break;
             }
         }
 
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
-        
         render_board(board, renderer, window);
-        
         update_board(board);
-
+        SDL_Delay(100);
+        
         SDL_RenderPresent(renderer);
+
+        frameCount++;
+        double elapsedTime = (double)(currentTime - fpsTime) / CLOCKS_PER_SEC;
+        if(elapsedTime >= 2){
+            fps = frameCount;
+            frameCount = 0;
+            fpsTime = currentTime;
+            printf("FPS:%d\n", fps / 2);
+        }
+
     }
 
     cleanup_board(board);
