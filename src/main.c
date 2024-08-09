@@ -19,7 +19,7 @@ int main(){
         return 1;
     }
 
-    SDL_Window* window = SDL_CreateWindow("Conway's Game of Life", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 480, 480, SDL_WINDOW_SHOWN);
+    SDL_Window* window = SDL_CreateWindow("Conway's Game of Life", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     if(!window){
         printf("Failed to initialize window");
         SDL_Quit();
@@ -36,18 +36,10 @@ int main(){
     //Initialize variables used for the main loop and fps
     SDL_Event event;
     int running = 1;
-
-    clock_t lastTime = clock();
-    clock_t fpsTime = clock();
-    int frameCount = 0;
-    int fps = 0;
+    int isBoardRunning = 0;
 
     //Main loop
     while(running){
-        clock_t currentTime = clock();
-        double deltaTime = (double)(currentTime - lastTime) / CLOCKS_PER_SEC;
-        lastTime = currentTime;
-
         //Check events
         while(SDL_PollEvent(&event)){
             switch(event.type){
@@ -61,6 +53,9 @@ int main(){
                         toggle_square(board, renderer, x, y);
                     }
                     break;
+                case SDL_KEYDOWN:
+                    if(event.key.keysym.sym == SDLK_r) isBoardRunning = !isBoardRunning;
+                    if(event.key.keysym.sym == SDLK_q) running = 0;
             }
         }
 
@@ -68,22 +63,14 @@ int main(){
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
-        render_board(board, renderer, window);
-        update_board(board);
+        if(isBoardRunning){
+            update_board(board);
+        }
+
+        render_board(board, renderer);
         SDL_Delay(100);
         
         SDL_RenderPresent(renderer);
-
-        //Count and display FPS
-        frameCount++;
-        double elapsedTime = (double)(currentTime - fpsTime) / CLOCKS_PER_SEC;
-        if(elapsedTime >= 2){
-            fps = frameCount;
-            frameCount = 0;
-            fpsTime = currentTime;
-            printf("FPS:%d\n", fps / 2);
-        }
-
     }
 
     //Clean up allocated objects

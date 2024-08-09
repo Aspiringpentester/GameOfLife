@@ -35,11 +35,9 @@ int next_gen(int** cells, int r, int c, int height, int width){
     int neighbors = 0;
     for(int x = -1; x <= 1; x++){
         for(int y = -1; y <= 1; y++){
-            if(!(c + x < 0 || c + x >= width || r + y < 0 || r + y >= height)){
-                if(x != 0 || y != 0){
-                    if(cells[r + y][c + x]){
-                        neighbors++;
-                    }
+            if((x != 0 || y != 0) && !(c + x < 0 || c + x >= width || r + y < 0 || r + y >= height)){
+                if(cells[r + y][c + x]){
+                    neighbors++;
                 }
             }
         }
@@ -47,18 +45,10 @@ int next_gen(int** cells, int r, int c, int height, int width){
     
     //Apply logic for if a cell is alive or not
     if(cells[r][c]){
-        if(neighbors < 2 || neighbors > 3){
-            return 0;
-        }
-        else{
-            return 1;
-        }
+        return !(neighbors < 2 || neighbors > 3);
     }
     else{
-        if(neighbors == 3){
-            return 1;
-        }
-        return 0;
+        return neighbors == 3;
     }
 }
 
@@ -94,7 +84,7 @@ void print_board(Board* board){
 
 
 //Draws rectangles for all the cells in the board
-void render_board(Board* board, SDL_Renderer* renderer, SDL_Window* window){
+void render_board(Board* board, SDL_Renderer* renderer){
     int width = 0;
     int height = 0;
 
